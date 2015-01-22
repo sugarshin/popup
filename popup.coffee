@@ -1,6 +1,7 @@
 extend = require 'node.extend'
 
 class Popup
+  "use strict"
 
   _addEvent: do ->
     if window.addEventListener
