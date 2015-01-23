@@ -3,6 +3,7 @@ extend = require 'node.extend'
 class Popup
   "use strict"
 
+  # 仮
   _addEvent: do ->
     if window.addEventListener
       return (el, eventName, handler) ->
@@ -25,7 +26,13 @@ class Popup
     url: null
     name: 'popup'
 
-  _prepareParam: ->
+  setURL: ->
+    if (url = @el.getAttribute('href'))?
+      @_url = url
+    else
+      @_url = @opts.url
+
+  setParam: ->
     if (w = @el.getAttribute('data-popup-width'))?
       width = w
     else
@@ -36,11 +43,6 @@ class Popup
     else
       height = @opts.height
 
-    if (url = @el.getAttribute('href'))?
-      @_url = url
-    else
-      @_url = @opts.url
-
     x = (window.screen.width - width) / 2
     y = (window.screen.height - height) / 2
 
@@ -48,7 +50,8 @@ class Popup
 
   constructor: (@el, opts) ->
     @opts = extend {}, @_defaults, opts
-    @_prepareParam()
+    @setURL()
+    @setParam()
 
   open: ->
     window.open @_url, @opts.name, @_param
