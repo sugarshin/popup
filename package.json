@@ -1,7 +1,14 @@
 {
   "name": "popup.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Popup",
+  "main": "popup.js",
+  "scripts": {
+    "start": "node ./node_modules/.bin/coffee -c -w popup.coffee"
+  },
   "author": "sugarshin",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "coffee-script": "^1.8.0"
+  }
 }

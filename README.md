@@ -1,1 +1,5 @@
 # Popup
+
+```shell
+npm start
+```

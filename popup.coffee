@@ -1,4 +1,4 @@
-extend = require 'node.extend'
+extend = require 'extend'
 
 class Popup
   "use strict"
