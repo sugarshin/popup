@@ -1,14 +1,31 @@
 {
-  "name": "popup.js",
-  "version": "0.0.2",
-  "description": "Popup",
+  "name": "popup",
+  "version": "0.1.0",
+  "description": "popup",
+  "repository": "git@github.com:sugarshin/popup.git",
   "main": "popup.js",
   "scripts": {
-    "start": "node ./node_modules/.bin/coffee -c -w popup.coffee"
+    "start": "coffee -cw popup.coffee",
+    "pretest": "browserify -t coffeeify test/test.coffee -o test/test.js",
+    "test": "mocha-phantomjs -p node_modules/.bin/phantomjs test/index.html",
+    "build": "uglifyjs popup.js -cm --comments '/\\/*!/' -o popup.min.js"
+  },
+  "engines": {
+    "node": "0.10.x"
   },
   "author": "sugarshin",
   "license": "MIT",
   "devDependencies": {
-    "coffee-script": "^1.8.0"
+    "browserify": "^9.0.3",
+    "coffee-script": "^1.9.0",
+    "coffeeify": "^1.0.0",
+    "mocha": "^2.2.1",
+    "mocha-phantomjs": "^3.5.3",
+    "phantomjs": "^1.9.16",
+    "power-assert": "^0.10.2",
+    "uglify-js": "^2.4.16"
+  },
+  "dependencies": {
+    "object-assign": "^2.0.0"
   }
 }

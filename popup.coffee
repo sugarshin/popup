@@ -1,69 +1,67 @@
-extend = require 'extend'
+###!
+ * @license popup
+ * (c) sugarshin
+ * License: MIT
+###
 
-class Popup
-  "use strict"
+"use strict"
 
-  # 仮
-  _addEvent: do ->
-    if window.addEventListener
-      return (el, eventName, handler) ->
-        el.addEventListener eventName, handler
-    else
-      return (el, eventName, handler) ->
-        el.attachEvent "on#{eventName}", handler
+do (root = this, factory = (objectAssign) ->
 
-  _removeEvent: do ->
-    if window.removeEventListener
-      return (el, eventName, handler) ->
-        el.removeEventListener eventName, handler
-    else
-      return (el, eventName, handler) ->
-        el.detachEvent "on#{eventName}", handler
+  if objectAssign is undefined then objectAssign = (out) ->
+    out or= {}
+    for i in [1...arguments.length]
+      unless arguments[i] then continue
+      for own key, val of arguments[i]
+        out[key] = val
+    return out
 
-  _defaults:
-    width: 640
-    height: 800
-    url: null
-    name: 'popup'
+  class Popup
 
-  setURL: ->
-    if (url = @el.getAttribute('href'))?
-      @_url = url
-    else
-      @_url = @opts.url
+    _defaults:
+      width: 640
+      height: 800
+      url: null
+      name: 'popup'
 
-  setParam: ->
-    if (w = @el.getAttribute('data-popup-width'))?
-      width = w
-    else
-      width = @opts.width
+    setURL: ->
+      if (url = @el.getAttribute('href'))?
+        @_url = url
+      else
+        @_url = @opts.url
 
-    if (h = @el.getAttribute('data-popup-heigt'))?
-      height = h
-    else
-      height = @opts.height
+    setParam: ->
+      if (w = @el.getAttribute('data-popup-width'))?
+        width = w
+      else
+        width = @opts.width
 
-    x = (window.screen.width - width) / 2
-    y = (window.screen.height - height) / 2
+      if (h = @el.getAttribute('data-popup-heigt'))?
+        height = h
+      else
+        height = @opts.height
 
-    @_param = "screenX=#{x},screenY=#{y},left=#{x},top=#{y},width=#{width},height=#{height},toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=yes"
+      x = (window.screen.width - width) / 2
+      y = (window.screen.height - height) / 2
 
-  constructor: (@el, opts) ->
-    @opts = extend {}, @_defaults, opts
-    @setURL()
-    @setParam()
+      @_param = "screenX=#{x},screenY=#{y},left=#{x},top=#{y},width=#{width},height=#{height},toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=yes"
 
-  open: ->
-    window.open @_url, @opts.name, @_param
-    return this
+    constructor: (@el, opts) ->
+      @opts = objectAssign {}, @_defaults, opts
+      @setURL()
+      @setParam()
 
-  @open: (el) ->
-    popup = new Popup el
-    popup.open()
+    open: ->
+      window.open @_url, @opts.name, @_param
+      return this
 
-if typeof define is 'function' and define.amd
-  define -> Popup
-else if typeof module isnt 'undefined' and module.exports
-  module.exports = Popup
-else
-  window.Popup or= Popup
+    @open: (el) ->
+      popup = new Popup el
+      popup.open()
+
+) ->
+  if typeof module is 'object' and typeof module.exports is 'object'
+    module.exports = factory require 'object-assign'
+  else
+    root.Popup or= factory()
+  return
