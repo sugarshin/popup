@@ -13,7 +13,7 @@ npm i sugarshin/popup
 ```coffeescript
 Popup = require 'popup'
 
-new Popup
+new Popup element, options
 ```
 
 or
@@ -21,11 +21,13 @@ or
 ```html
 <script src="popup.js"></script>
 <script>
-  new Popup;
+  new Popup(element, options);
 </script>
 ```
 
 ### Config
+
+options
 
 ```coffeescript
 _defaults:
