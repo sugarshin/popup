@@ -76,10 +76,17 @@ do (root = this, factory = ->
       window.open @_url, @opts.name, @_param
       return this
 
+    _onClick: (ev) =>
+      ev.preventDefault?()
+      @open()
+
     events: ->
-      addEvent @el, 'click', (ev) =>
-        ev.preventDefault?()
-        @open()
+      addEvent @el, 'click', @_onClick
+      return this
+
+    unbind: ->
+      removeEvent @el, 'click', @_onClick
+      return this
 
     @open: (el) ->
       unless el? then return

@@ -8,6 +8,8 @@
 
 (function() {
   "use strict";
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   (function(root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
       module.exports = factory();
@@ -98,6 +100,7 @@
 
       function Popup(_at_el, opts) {
         this.el = _at_el;
+        this._onClick = __bind(this._onClick, this);
         this._configure(opts);
         this.setURL();
         this.setName();
@@ -110,15 +113,21 @@
         return this;
       };
 
+      Popup.prototype._onClick = function(ev) {
+        if (typeof ev.preventDefault === "function") {
+          ev.preventDefault();
+        }
+        return this.open();
+      };
+
       Popup.prototype.events = function() {
-        return addEvent(this.el, 'click', (function(_this) {
-          return function(ev) {
-            if (typeof ev.preventDefault === "function") {
-              ev.preventDefault();
-            }
-            return _this.open();
-          };
-        })(this));
+        addEvent(this.el, 'click', this._onClick);
+        return this;
+      };
+
+      Popup.prototype.unbind = function() {
+        removeEvent(this.el, 'click', this._onClick);
+        return this;
       };
 
       Popup.open = function(el) {
