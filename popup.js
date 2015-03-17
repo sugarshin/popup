@@ -8,40 +8,54 @@
 
 (function() {
   "use strict";
-  var __hasProp = {}.hasOwnProperty;
-
   (function(root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
-      module.exports = factory(require('object-assign'));
+      module.exports = factory();
     } else {
       root.Popup || (root.Popup = factory());
     }
-  })(this, function(objectAssign) {
+  })(this, function() {
     var Popup;
-    if (objectAssign === void 0) {
-      objectAssign = function(out) {
-        var i, key, val, _i, _ref, _ref1;
-        out || (out = {});
-        for (i = _i = 1, _ref = arguments.length; 1 <= _ref ? _i < _ref : _i > _ref; i = 1 <= _ref ? ++_i : --_i) {
-          if (!arguments[i]) {
-            continue;
-          }
-          _ref1 = arguments[i];
-          for (key in _ref1) {
-            if (!__hasProp.call(_ref1, key)) continue;
-            val = _ref1[key];
-            out[key] = val;
-          }
-        }
-        return out;
-      };
-    }
     return Popup = (function() {
+      var addEvent, removeEvent;
+
+      addEvent = (function() {
+        if (window.addEventListener) {
+          return function(el, eventName, handler, useCapture) {
+            if (useCapture == null) {
+              useCapture = false;
+            }
+            return el.addEventListener(eventName, handler, useCapture);
+          };
+        } else {
+          return function(el, eventName, handler) {
+            return el.attachEvent("on" + eventName, function() {
+              return handler.call(el);
+            });
+          };
+        }
+      })();
+
+      removeEvent = (function() {
+        if (window.removeEventListener) {
+          return function(el, eventName, handler, useCapture) {
+            if (useCapture == null) {
+              useCapture = false;
+            }
+            return el.removeEventListener(eventName, handler, useCapture);
+          };
+        } else {
+          return function(el, eventName, handler) {
+            return el.detachEvent("on" + eventName, handler);
+          };
+        }
+      })();
+
       Popup.prototype._defaults = {
         width: 640,
         height: 800,
         url: null,
-        name: 'popup'
+        nameSuffix: '-popup'
       };
 
       Popup.prototype.setURL = function() {
@@ -51,6 +65,10 @@
         } else {
           return this._url = this.opts.url;
         }
+      };
+
+      Popup.prototype.setName = function() {
+        return this._name = "" + window.name + this.opts.nameSuffix;
       };
 
       Popup.prototype.setParam = function() {
@@ -70,11 +88,21 @@
         return this._param = "screenX=" + x + ",screenY=" + y + ",left=" + x + ",top=" + y + ",width=" + width + ",height=" + height + ",toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=yes";
       };
 
+      Popup.prototype._configure = function(opts) {
+        this.opts = opts || {};
+        this.opts.width = this.opts.width || this._defaults.width;
+        this.opts.height = this.opts.height || this._defaults.height;
+        this.opts.url = this.opts.url || this._defaults.url;
+        return this.opts.nameSuffix = this.opts.nameSuffix || this._defaults.nameSuffix;
+      };
+
       function Popup(_at_el, opts) {
         this.el = _at_el;
-        this.opts = objectAssign({}, this._defaults, opts);
+        this._configure(opts);
         this.setURL();
+        this.setName();
         this.setParam();
+        this.events();
       }
 
       Popup.prototype.open = function() {
@@ -82,10 +110,22 @@
         return this;
       };
 
+      Popup.prototype.events = function() {
+        return addEvent(this.el, 'click', (function(_this) {
+          return function(ev) {
+            if (typeof ev.preventDefault === "function") {
+              ev.preventDefault();
+            }
+            return _this.open();
+          };
+        })(this));
+      };
+
       Popup.open = function(el) {
-        var popup;
-        popup = new Popup(el);
-        return popup.open();
+        if (el == null) {
+          return;
+        }
+        return new Popup(el).open();
       };
 
       return Popup;

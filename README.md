@@ -32,7 +32,7 @@ _defaults:
   width: 640
   height: 800
   url: null
-  name: 'popup'
+  nameSuffix: '-popup'
 ```
 
 ## Contributing

@@ -1,6 +1,6 @@
 {
   "name": "popup",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "popup",
   "repository": "git@github.com:sugarshin/popup.git",
   "main": "popup.js",
@@ -24,8 +24,5 @@
     "phantomjs": "^1.9.16",
     "power-assert": "^0.10.2",
     "uglify-js": "^2.4.16"
-  },
-  "dependencies": {
-    "object-assign": "^2.0.0"
   }
 }

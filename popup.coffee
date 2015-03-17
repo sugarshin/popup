@@ -6,29 +6,41 @@
 
 "use strict"
 
-do (root = this, factory = (objectAssign) ->
-
-  if objectAssign is undefined then objectAssign = (out) ->
-    out or= {}
-    for i in [1...arguments.length]
-      unless arguments[i] then continue
-      for own key, val of arguments[i]
-        out[key] = val
-    return out
+do (root = this, factory = ->
 
   class Popup
+
+    addEvent = do ->
+      if window.addEventListener
+        (el, eventName, handler, useCapture = false) ->
+          el.addEventListener eventName, handler, useCapture
+      else
+        (el, eventName, handler) ->
+          el.attachEvent "on#{eventName}", -> handler.call el
+
+    removeEvent = do ->
+      if window.removeEventListener
+        (el, eventName, handler, useCapture = false) ->
+          el.removeEventListener eventName, handler, useCapture
+      else
+        (el, eventName, handler) ->
+          el.detachEvent "on#{eventName}", handler
+
+
 
     _defaults:
       width: 640
       height: 800
       url: null
-      name: 'popup'
+      nameSuffix: '-popup'
 
     setURL: ->
       if (url = @el.getAttribute('href'))?
         @_url = url
       else
         @_url = @opts.url
+
+    setName: ->　@_name = "#{window.name}#{@opts.nameSuffix}"
 
     setParam: ->
       if (w = @el.getAttribute('data-popup-width'))?
@@ -46,22 +58,36 @@ do (root = this, factory = (objectAssign) ->
 
       @_param = "screenX=#{x},screenY=#{y},left=#{x},top=#{y},width=#{width},height=#{height},toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=yes"
 
+    _configure: (opts) ->
+      @opts = opts or {}
+      @opts.width = @opts.width or @_defaults.width
+      @opts.height = @opts.height or @_defaults.height
+      @opts.url = @opts.url or @_defaults.url
+      @opts.nameSuffix = @opts.nameSuffix or @_defaults.nameSuffix
+
     constructor: (@el, opts) ->
-      @opts = objectAssign {}, @_defaults, opts
+      @_configure opts
       @setURL()
+      @setName()
       @setParam()
+      @events()
 
     open: ->
       window.open @_url, @opts.name, @_param
       return this
 
+    events: ->
+      addEvent @el, 'click', (ev) =>
+        ev.preventDefault?()
+        @open()
+
     @open: (el) ->
-      popup = new Popup el
-      popup.open()
+      unless el? then return
+      new Popup(el).open()
 
 ) ->
   if typeof module is 'object' and typeof module.exports is 'object'
-    module.exports = factory require 'object-assign'
+    module.exports = factory()
   else
     root.Popup or= factory()
   return
